@@ -26,7 +26,7 @@ claude plugin marketplace add GiuseppeBellamacina/cosmic-plugins
 claude plugin install pr-review-helper@cosmic-plugins
 ```
 
-Requires the [GitHub CLI](https://cli.github.com), logged in: `gh auth login`. Nothing else to install.
+Requires the [GitHub CLI](https://cli.github.com), logged in (`gh auth login`), and [Node.js](https://nodejs.org) 18+ (the download script uses only the Node standard library: nothing to `npm install`).
 
 ## Find PRs waiting for a review
 
@@ -74,8 +74,8 @@ The list is saved in `~/.claude/pr-review-helper/last-search.json`, so you can r
 /pr-review-helper:review 4 only the tests, in Italian
 ```
 
-1. **Checks it is worth it**: closed, draft, already reviewed, bot or trivial PRs are pointed out before any work.
-2. **Downloads it, read-only**: description, diff, every changed file before and after, the repository's own rules (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`), recent history of the changed files and earlier review comments on them. Only read-only `gh` API calls, saved as plain files in a temp folder. Nothing is cloned, checked out, installed or run.
+1. **Downloads it, read-only**: description, diff, every changed file before and after, the repository's own rules (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`), recent history of the changed files, earlier review comments on them, and the reviews already on the PR. One script ([`scripts/fetch-pr.mjs`](scripts/fetch-pr.mjs)) makes only read-only `gh` calls and saves plain files in a temp folder. Nothing is cloned, checked out, installed or run.
+2. **Checks it is worth it**: closed, draft, bot or trivial PRs, and PRs a person already reviewed (you included), are pointed out before any work. Reviews from bots alone don't count, but their findings aren't repeated.
 3. **Analyses it with specialist reviewers in parallel**, each through one lens:
 
    | Lens | Looks for |

@@ -1,7 +1,7 @@
 {
   "name": "pr-review-helper",
   "displayName": "PR Review Helper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Find open GitHub pull requests that nobody has reviewed yet (by repo, user or topic, sorted by popularity or date) and write a targeted review you confirm before it is posted under your own GitHub account.",
   "author": {
     "name": "Giuseppe Bellamacina",

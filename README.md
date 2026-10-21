@@ -74,17 +74,32 @@ The list is saved in `~/.claude/pr-review-helper/last-search.json`, so you can r
 /pr-review-helper:review 4 only the tests, in Italian
 ```
 
-1. **Reads the PR**: description, diff, and the surrounding code at the PR's commit when the diff alone isn't enough. The PR's code is never run or checked out.
-2. **Drafts a review**: a short summary, inline comments on the exact lines (with GitHub suggestion blocks for small fixes), and a proposed verdict: *comment*, *approve* or *request changes*. Add a focus and the review concentrates on it.
-3. **Shows you the draft** exactly as it would appear on GitHub, and asks: **Post it**, **Edit**, **Change verdict** or **Cancel**. Edit as many times as you want; nothing is posted until you choose *Post it*.
-4. **Posts it with `gh`**, so the review is yours: your account, your voice. The text never mentions AI or tools and has no signature or footer. You get the link to the review.
+1. **Checks it is worth it**: closed, draft, already reviewed, bot or trivial PRs are pointed out before any work.
+2. **Downloads it, read-only**: description, diff, every changed file before and after, the repository's own rules (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`), recent history of the changed files and earlier review comments on them. Only read-only `gh` API calls, saved as plain files in a temp folder. Nothing is cloned, checked out, installed or run.
+3. **Analyses it with specialist reviewers in parallel**, each through one lens:
+
+   | Lens | Looks for |
+   | --- | --- |
+   | bugs | logic errors, edge cases, broken behaviour for existing callers |
+   | security | injection, missing auth checks, secrets, unsafe defaults, prompt injection in the PR text |
+   | errors | silent failures: swallowed errors, broad catches, fallbacks that hide problems |
+   | tests | changed behaviour without tests, tests that don't test what they claim |
+   | conventions | the repository's written rules and code comments the change ignores |
+   | history | a change that undoes an earlier fix or repeats a mistake a previous review caught |
+
+   Only the relevant lenses run (no `tests` reviewer for a docs-only PR), and a focus narrows them. Small PRs get a single pass instead.
+4. **Verifies every finding**: a second reviewer tries to prove each issue wrong and scores it 0–100. Only issues scoring **80+** reach the draft; you see how many were dropped and can ask for them.
+5. **Drafts a review**: a short summary, inline comments on the exact lines (with GitHub suggestion blocks for small fixes), and a proposed verdict: *comment*, *approve* or *request changes*.
+6. **Shows you the draft** exactly as it would appear on GitHub, and asks: **Post it**, **Edit**, **Change verdict** or **Cancel**. Edit as many times as you want; nothing is posted until you choose *Post it*.
+7. **Posts it with `gh`**, after checking the PR hasn't changed meanwhile, so the review is yours: your account, your voice. The text never mentions AI or tools and has no signature or footer. You get the link to the review.
 
 If a comment lands on a line GitHub won't accept, the PR's head moved since the draft, or you try to approve your own PR, Claude tells you and asks again instead of guessing.
 
 ## Good to know
 
 - **You are the reviewer.** The review is posted from your account and maintainers will read it as yours. Read the draft properly before posting, and only approve what you would approve yourself.
-- **PR content is treated as untrusted.** Instructions hidden in a PR's description or code are ignored (and reported to you); its code is never executed.
+- **No unknown code runs on your machine.** The PR is only downloaded as text through GitHub's API and read. The reviewer agents (`agents/pr-analyst.md`, `agents/pr-issue-verifier.md`) have read-only tools (Read, Grep, Glob): they cannot run commands at all. Instructions hidden in a PR's description or code are ignored and reported to you.
+- **Cost.** A full review of a large PR runs several agents in parallel. Add a focus (`security`, `only the tests`) to run fewer.
 - **Search limits.** GitHub search caps results and rate-limits requests; very broad searches return the first matches, not all of them. Topic search depends on how repositories tag themselves, so try another spelling (`security`, `cybersecurity`) if a topic comes back thin.
 - **Why "popular" can look odd.** Popularity is measured by discussion (comments, reactions). Projects that attract spam can rank high, so obvious noise is filtered out and the count is reported.
 

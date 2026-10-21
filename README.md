@@ -99,6 +99,7 @@ If a comment lands on a line GitHub won't accept, the PR's head moved since the 
 
 - **You are the reviewer.** The review is posted from your account and maintainers will read it as yours. Read the draft properly before posting, and only approve what you would approve yourself.
 - **No unknown code runs on your machine.** The PR is only downloaded as text through GitHub's API and read. The reviewer agents (`agents/pr-analyst.md`, `agents/pr-issue-verifier.md`) have read-only tools (Read, Grep, Glob): they cannot run commands at all. Instructions hidden in a PR's description or code are ignored and reported to you.
+- **Nothing left behind.** The downloaded PR and the review payload live in a temp folder that is deleted at the end, whether the review was posted, cancelled or failed. The only file that stays is `~/.claude/pr-review-helper/last-search.json`, the last list from `find`, overwritten by each search.
 - **Cost.** A full review of a large PR runs several agents in parallel. Add a focus (`security`, `only the tests`) to run fewer.
 - **Search limits.** GitHub search caps results and rate-limits requests; very broad searches return the first matches, not all of them. Topic search depends on how repositories tag themselves, so try another spelling (`security`, `cybersecurity`) if a topic comes back thin.
 - **Why "popular" can look odd.** Popularity is measured by discussion (comments, reactions). Projects that attract spam can rank high, so obvious noise is filtered out and the count is reported.

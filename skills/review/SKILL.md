@@ -114,7 +114,7 @@ Then ask with AskUserQuestion:
 - **Post it**: submit as shown.
 - **Edit**: the user says what to change (in the notes or the next message); apply it and show the full draft again.
 - **Change verdict**: ask which one (`COMMENT`, `APPROVE`, `REQUEST_CHANGES`), then show the draft again.
-- **Cancel**: post nothing; offer to save the draft as a Markdown file in the scratchpad.
+- **Cancel**: post nothing; offer to save the draft as a Markdown file where the user wants it, then clean up (see the end).
 
 Ask again after every change. Post only after an explicit **Post it** on the draft as it stands.
 
@@ -142,7 +142,7 @@ gh api "repos/<owner>/<repo>/pulls/<number>/reviews" --method POST --input <file
 
 `gh` posts with the user's own account, so the review appears as theirs. Then:
 
-- **Success**: give the link (`html_url` in the response) and delete the temporary file and the workspace folder.
+- **Success**: give the link (`html_url` in the response).
 - **422, a line is not part of the diff**: move that comment into the body as `` `path:line`: comment ``, show the user what changed, ask again, then retry.
 - **"Can not approve your own pull request"** or **"Can not request changes on your own pull request"**: say so and offer to post it as `COMMENT`.
 - **The head commit moved** (new commits pushed since you read it): say so, and offer to re-read the diff and update the draft before posting.
@@ -150,3 +150,7 @@ gh api "repos/<owner>/<repo>/pulls/<number>/reviews" --method POST --input <file
 - Any other error: show it, post nothing else, keep the draft.
 
 End with one line: the review link and the verdict.
+
+## Clean up (always)
+
+Whatever the outcome (posted, cancelled, or stopped by an error), delete every workspace folder and payload file this review created, and anything else you wrote along the way. Keep only a draft the user asked to save. Check they are gone; the user's machine is left as it was, except `~/.claude/pr-review-helper/last-search.json`.

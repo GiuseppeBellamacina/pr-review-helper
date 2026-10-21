@@ -55,7 +55,7 @@ Repository filters given by the user (`--repo`, `--owner`) narrow the topic sear
 
 ## 3. Clean up
 
-- Merge and deduplicate by `url`.
+- Merge and deduplicate by `url`. If you save search results to files to merge them, put them in your scratchpad (the system temp folder if you have none) and delete them once the list is saved: the only file `find` leaves behind is `last-search.json`.
 - Drop bot authors (`author.type == "Bot"` or a login ending in `[bot]`): dependency bumps and automated PRs are not what the user wants to review. Keep them only if the user asked.
 - Drop obvious noise: PRs to the author's own personal fork with thousands of comments, titles like `test`, `NEW`, `update`. Say how many you dropped.
 - Re-sort the merged list by the requested order (`commentsCount` for popularity, `createdAt` for date), then cut to the requested size.
